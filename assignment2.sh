@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# ensuring the script to run as root
+# Ensure the script is executed as root
 if [[ $EUID -ne 0 ]]; then
-	echo "This script requires root user to execuate"
-	exit 1
+    echo "This script requires root user to execute"
+    exit 1
 fi
 
 # Configure network interface
@@ -28,6 +28,8 @@ network:
             dhcp4: false
 EOF
 fi
+
+netplan apply
 if [ $? -eq 0 ]; then
     echo "Netplan configuration applied successfully."
 else
@@ -35,46 +37,61 @@ else
     exit 1
 fi
 
-
-# Update /etc/hosts
+# Ensure /etc/hosts contains the correct entry for server1
 echo "Updating /etc/hosts on server 1"
 
 if ! grep -q "192.168.16.21 server1" /etc/hosts; then
-	sed -i '/server1/d' /etc/hosts
-	echo "192.168.16.21 server1" >> /etc/hosts
-	echo "Configuration complete!"
+    sed -i '/server1/d' /etc/hosts
+    echo "192.168.16.21 server1" >> /etc/hosts
+    echo "Configuration complete!"
 else
-	echo "/etc/hosts already updated"
+    echo "/etc/hosts already updated"
 fi
 
-
-
-#Installing software
+# Install software
 apt-get update
 if ! dpkg -l | grep -qw apache2; then
-    apt-get install -y apache2 && echo "Apache  installation is done."
+    apt-get install -y apache2
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to install Apache."
+        exit 1
+    fi
     systemctl enable apache2
+    echo "Apache installation is done."
 else
     echo "Apache is already installed."
 fi
 
 if ! dpkg -l | grep -qw squid; then
-    apt-get install -y squid && echo "Squid installation is done."
+    apt-get install -y squid
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to install Squid."
+        exit 1
+    fi
     systemctl enable squid
+    echo "Squid installation is done."
 else
     echo "Squid is already installed."
 fi
-sudo systemctl mask ovsdb-server.service
 
+if systemctl is-enabled ovsdb-server.service &>/dev/null; then
+    sudo systemctl mask ovsdb-server.service
+    echo "ovsdb-server.service masked."
+else
+    echo "ovsdb-server.service is already masked."
+fi
 
-
-# Create Users and SSH Keys
+# Create users and SSH keys
 users=("dennis" "aubrey" "captain" "snibbles" "brownie" "scooter" "sandy" "perrier" "cindy" "tiger" "yoda")
 for user in "${users[@]}"; do
     if ! id "$user" &>/dev/null; then
         sudo useradd -m -s /bin/bash "$user"
     else
         echo "User $user already exists."
+        if [ ! -d "/home/$user" ]; then
+            sudo mkdir -p /home/"$user"
+            sudo chown "$user":"$user" /home/"$user"
+        fi
     fi
 
     # Create .ssh directory
