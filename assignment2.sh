@@ -17,7 +17,8 @@ if [ ! -f "$Netplan_configuration" ]; then
 fi
 
 if grep -q "addresses:" "$Netplan_configuration"; then
-    sed -i "/addresses:/c\            addresses: [$ip]" "$Netplan_configuration"
+    sed -i "/eth0:/,/nameservers/ { /addresses:/ s/addresses: \[[^]]*\]/addresses: [$ip]/ }" "$Netplan_configuration"
+
 else
     cat <<EOF >> "$Netplan_configuration"
 network:
