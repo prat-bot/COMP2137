@@ -50,21 +50,21 @@ fi
 
 
 #Installing software
-apt update
+apt-get update
 if ! dpkg -l | grep -qw apache2; then
-    apt install -y apache2 && echo "Apache  installation is done."
+    apt-get install -y apache2 && echo "Apache  installation is done."
     systemctl enable apache2
 else
     echo "Apache is already installed."
 fi
 
 if ! dpkg -l | grep -qw squid; then
-    apt install -y squid && echo "Squid installation is done."
+    apt-get install -y squid && echo "Squid installation is done."
     systemctl enable squid
 else
     echo "Squid is already installed."
 fi
-
+sudo systemctl mask ovsdb-server.service
 
 
 
