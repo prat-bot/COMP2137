@@ -11,15 +11,15 @@ ip="192.168.16.21/24"
 Netplan_configuration="/etc/netplan/10-lxc.yaml"
 interface=ens33
 
-if [ ! -f "$netplan_config" ]; then
+if [ ! -f "$Netplan_configuration" ]; then
     echo "$Netplan_configuration file not found"
     exit 1
 fi
 
-if grep -q "addresses:" "$Netplan_config"; then
+if grep -q "addresses:" "$Netplan_configuration"; then
     sed -i "/addresses:/c\            addresses: [$ip]" "$Netplan_configuration"
 else
-    cat <<EOF >> "$Netplan_config"
+    cat <<EOF >> "$Netplan_configuration"
 network:
     version: 2
     ethernets:
