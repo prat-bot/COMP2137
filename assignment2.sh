@@ -9,7 +9,7 @@ fi
 # Configure network interface
 ip="192.168.16.21/24"
 Netplan_configuration="/etc/netplan/10-lxc.yaml"
-interface=ens33
+interface=eth0
 
 if [ ! -f "$Netplan_configuration" ]; then
     echo "$Netplan_configuration file not found"
