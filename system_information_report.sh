@@ -4,7 +4,7 @@ clear
 # finds current user
 USERNAME=$(whoami)
 # finds the current date
-DATE=$(date +"%Y-%m-%d %H:%M:%S")
+DATE=$(date | awk '{print $1, $2, $3}')
 # finds system host
 HOSTNAME=$(hostname)
 # finds os name and version
@@ -14,9 +14,9 @@ Uptime=$(uptime -p)
 # finds cpu model
 CPU=$(lscpu | grep 'Model name' | awk -F': ' '{print $2}' | sed 's/^ *//')
 # finds total installed RAM
-RAM=$(free -h | awk '/^Mem:/ {print $2}')
+RAM=$(cat /proc/meminfo | awk '/MemTotal/ {print $2 , $3}')
 # finds disk information 
-DISKS=$(lsblk -d -o NAME,SIZE | grep -v "NAME" | awk '{print "Disk: " $1 " Size: " $2}')
+DISKS=$(lsblk -d -o NAME,SIZE,MODEL | sort -r | head -n 3)
 # finds the video card model.
 Video=$(lspci | grep -i vga | awk -F: '{print $3}' | sed 's/^ //')
 
@@ -57,7 +57,8 @@ Hardware Information
 --------------------
 CPU: $CPU
 RAM: $RAM
-Disk(s): $DISKS
+Disk(s): 
+$DISKS
 Video: $Video
 
 Network Information
