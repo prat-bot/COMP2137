@@ -8,7 +8,7 @@ fi
 
 # Configure network interface
 ip="192.168.16.21/24"
-Netplan_configuration="/etc/netplan/01-netcfg.yaml"
+Netplan_configuration="/etc/netplan/50-cloud-init.yaml"
 interface=ens33
 
 if [ ! -f "$netplan_config" ]; then
