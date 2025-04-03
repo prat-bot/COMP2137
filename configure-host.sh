@@ -67,7 +67,7 @@ if [ -n "$new_ip" ]; then
     if [ "$current_ip" != "$new_ip" ]; then
         log_message "Changing IP address from $current_ip to $new_ip"
 
-        # Use NetworkManager CLI instead of Netplan
+        #Configure eth0 with static IP, gateway, and DNS via nmcli
         nmcli connection modify eth0 ipv4.addresses "$new_ip/24" ipv4.gateway "192.168.16.1" ipv4.dns "8.8.8.8" ipv4.method manual
         nmcli connection up eth0
 
